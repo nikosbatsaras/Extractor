@@ -58,3 +58,14 @@ do
 
     cd ".."
 done
+
+echo ""
+echo ""
+echo ""
+echo "Checking for deep directories ..."
+echo ""
+find "$output" -maxdepth 3 -mindepth 3 -type d
+find "$output" -maxdepth 4 -mindepth 4 -type d
+find "$output" -maxdepth 5 -mindepth 5 -type d
+echo ""
+echo "Done."
