@@ -32,7 +32,7 @@ do
     dir=${dir%*/}
     cd "$dir"
 
-    myarray=(`find ./ -maxdepth 3 -name "*.c"`)
+    myarray=(`find ./ -maxdepth 5 -name "*.c"`)
     if [ ${#myarray[@]} -gt 0 ]
     then
         cd ".."
@@ -40,7 +40,7 @@ do
         continue
     fi
 
-    myarray=(`find ./ -maxdepth 3 -name "*.java"`)
+    myarray=(`find ./ -maxdepth 5 -name "*.java"`)
     if [ ${#myarray[@]} -gt 0 ]
     then
         cd ".."
@@ -48,7 +48,7 @@ do
         continue
     fi
 
-    myarray=(`find ./ -maxdepth 3 -name "*.cpp"`)
+    myarray=(`find ./ -maxdepth 5 -name "*.cpp"`)
     if [ ${#myarray[@]} -gt 0 ]
     then
         cd ".."
@@ -64,8 +64,19 @@ echo ""
 echo ""
 echo "Checking for deep directories ..."
 echo ""
+echo ""
+echo "Listing directories of depth 3:"
+echo ""
 find "$output" -maxdepth 3 -mindepth 3 -type d
+echo ""
+echo ""
+echo "Listing directories of depth 4:"
+echo ""
 find "$output" -maxdepth 4 -mindepth 4 -type d
+echo ""
+echo ""
+echo "Listing directories of depth 5:"
+echo ""
 find "$output" -maxdepth 5 -mindepth 5 -type d
 echo ""
 echo "Done."
