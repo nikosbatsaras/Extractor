@@ -1,5 +1,24 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]
+then
+    echo ""
+    echo "Error: Wrong number of arguments"
+    echo ""
+    echo "Usage: ./extractor.sh <input> <output>"
+    echo ""
+    echo "        <input>: Path to folder with .tgz files"
+    echo "       <output>: Path to folder of the classified output"
+    echo ""
+    exit
+fi
+
 cd "$1"
 output="$2"
+
+mkdir "$output/C"
+mkdir "$output/Java"
+mkdir "$output/C++"
 
 for file in *.tgz
 do
@@ -7,10 +26,6 @@ do
     mkdir "$exdir"
     tar xvzf "$file" -C "$exdir" --strip-components=1
 done
-
-mkdir "$output/C"
-mkdir "$output/Java"
-mkdir "$output/C++"
 
 for dir in ./*/
 do
