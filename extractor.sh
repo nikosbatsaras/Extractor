@@ -1,3 +1,4 @@
+cd "$1"
 for file in *.tgz; do
     exdir="${file%.tgz}"
     mkdir "$exdir"
