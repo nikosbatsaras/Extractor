@@ -16,7 +16,7 @@ do
     dir=${dir%*/}
     cd "$dir"
 
-    myarray=(`find ./ -maxdepth 1 -name "*.c"`)
+    myarray=(`find ./ -maxdepth 3 -name "*.c"`)
     if [ ${#myarray[@]} -gt 0 ]
     then 
         cd ".."
@@ -24,7 +24,7 @@ do
         continue
     fi
 
-    myarray=(`find ./ -maxdepth 1 -name "*.java"`)
+    myarray=(`find ./ -maxdepth 3 -name "*.java"`)
     if [ ${#myarray[@]} -gt 0 ]
     then 
         cd ".."
@@ -32,7 +32,7 @@ do
         continue
     fi
 
-    myarray=(`find ./ -maxdepth 1 -name "*.cpp"`)
+    myarray=(`find ./ -maxdepth 3 -name "*.cpp"`)
     if [ ${#myarray[@]} -gt 0 ]
     then 
         cd ".."
