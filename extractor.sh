@@ -15,6 +15,7 @@ fi
 
 cd "$1"
 output="$2"
+max_depth=5
 
 mkdir "$output/C"
 mkdir "$output/Java"
@@ -32,7 +33,7 @@ do
     dir=${dir%*/}
     cd "$dir"
 
-    myarray=(`find ./ -maxdepth 5 -name "*.c"`)
+    myarray=(`find ./ -maxdepth $max_depth -name "*.c"`)
     if [ ${#myarray[@]} -gt 0 ]
     then
         cd ".."
@@ -40,7 +41,7 @@ do
         continue
     fi
 
-    myarray=(`find ./ -maxdepth 5 -name "*.java"`)
+    myarray=(`find ./ -maxdepth $max_depth -name "*.java"`)
     if [ ${#myarray[@]} -gt 0 ]
     then
         cd ".."
@@ -48,7 +49,7 @@ do
         continue
     fi
 
-    myarray=(`find ./ -maxdepth 5 -name "*.cpp"`)
+    myarray=(`find ./ -maxdepth $max_depth -name "*.cpp"`)
     if [ ${#myarray[@]} -gt 0 ]
     then
         cd ".."
@@ -59,24 +60,14 @@ do
     cd ".."
 done
 
-echo ""
-echo ""
-echo ""
-echo "Checking for deep directories ..."
-echo ""
-echo ""
-echo "Listing directories of depth 3:"
-echo ""
-find "$output" -maxdepth 3 -mindepth 3 -type d
-echo ""
-echo ""
-echo "Listing directories of depth 4:"
-echo ""
-find "$output" -maxdepth 4 -mindepth 4 -type d
-echo ""
-echo ""
-echo "Listing directories of depth 5:"
-echo ""
-find "$output" -maxdepth 5 -mindepth 5 -type d
-echo ""
-echo "Done."
+printf "\n\nListing directories in deeper levels:\n"
+
+i=3
+while [ $i -le $max_depth ]
+do    
+    printf "\n\nListing directories of depth $i:\n\n"
+    find "$output" -maxdepth $i -mindepth $i -type d
+    i=$[$i+1]
+done
+
+printf "\n... done.\n\n"
