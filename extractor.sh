@@ -94,6 +94,14 @@ if [ "$inputdir" = "" ] || [ "$outputdir" = "" ]
 then
     usage
     exit 1
+elif [ ! -d "$inputdir" ]
+then
+    echo "ERROR: Directory $inputdir does not exist"
+    exit 1
+elif [ ! -d "$outputdir" ]
+then
+    echo "ERROR: Directory $outputdir does not exist"
+    exit 1
 fi
 
 declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
