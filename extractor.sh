@@ -1,16 +1,17 @@
 #!/bin/bash
 
-if [ "$#" -ne 2 ]
-then
+usage() {
     echo ""
-    echo "Error: Wrong number of arguments"
+    echo "Usage:"
+    echo "      ./extractor -i <input-folder> -o <output-folder>"
     echo ""
-    echo "Usage: ./extractor.sh <input> <output>"
-    echo "        <input>: Full path to folder with .tgz files"
-    echo "       <output>: Full path to folder of the classified output"
+    echo "Options:"
+    echo "      -i   <input-folder>    Complete path to folder with compressed projects"
+    echo "      -o   <output-folder>   Complete path to folder that will hold the classified projects"
+    echo "      -h                     Show usage"
     echo ""
-    exit
-fi
+    exit 1
+}
 
 find_deep_sources() {
     cd "$2/$1"
@@ -74,8 +75,26 @@ classify_projects() {
     find_deep_sources "$1" "$3"
 }
 
-inputdir="$1"
-outputdir="$2"
+inputdir=""
+outputdir=""
+
+while getopts ":i:o:h" opt
+do
+    case $opt in
+        i) inputdir="$OPTARG";;
+        o) outputdir="$OPTARG";;
+        h) usage; exit 1;;
+       \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
+        *) echo "Unimplemented option: -$OPTARG" >&2; exit 1;;
+        :) echo "Option -$OPTARG requires an argument." >&2; exit 1;;
+    esac
+done
+
+if [ "$inputdir" = "" ] || [ "$outputdir" = "" ]
+then
+    usage
+    exit 1
+fi
 
 declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java" )

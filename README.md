@@ -17,7 +17,7 @@ files. The name of the inner folder can be anything, it doesn't matter.
 
 Running the script like this:
 ```
-./extractor input-folder output-folder
+./extractor.sh  -i /full/path/to/input-folder -o /full/path/to/output-folder
 ```
 will produce a similar result:
 ```
