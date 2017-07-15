@@ -12,14 +12,77 @@ then
     exit
 fi
 
-cd "$1"
-output="$2"
-max_depth=10
+find_deep_sources() {
+    cd "$2/$1"
+    initial="$pwd"
 
-mkdir "$output/C"
-mkdir "$output/Java"
-mkdir "$output/C++"
+    src="${sources[$1]}"
+    hdr="${headers[$1]}"
 
+    # Find full path of first level directories
+    dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+
+    for project in "${dirs[@]}"
+    do
+        i=1
+        cd "$project"
+        while [ $i -le $max_depth ]
+        do
+            myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
+            for path in "${myarray[@]}"
+            do
+                # Need to check if files exist inside
+                count=`ls -1 "$path"/*"$src" "$path"/*"$hdr" \
+                    2>/dev/null | wc -l`
+                if [ $count != 0 ]
+                then 
+                    mv "$path"/* "$project"
+                    rm -r "$path"
+                fi 
+            done
+            let i++
+        done
+
+        # Delete empty directories
+        myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+        for emptydir in "${myarray[@]}"
+        do
+            rm -r "$emptydir"
+        done
+
+        cd $initial
+    done
+}
+
+classify_projects() {
+    cd "$2"
+    for dir in ./*/
+    do
+        dir=${dir%*/}
+        cd "$dir"
+
+        myarray=(`find ./ -maxdepth $max_depth -name "${any_src[$1]}"`)
+        if [ ${#myarray[@]} -gt 0 ]
+        then
+            cd ".."
+            mv "$dir" "$3/$1"
+            continue
+        fi
+
+        cd ".."
+    done
+
+    find_deep_sources "$1" "$3"
+}
+
+inputdir="$1"
+outputdir="$2"
+
+declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
+declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java")
+declare -A headers=(["C"]=".h"  ["C++"]=".h"    ["Java"]=".java")
+
+cd "$inputdir"
 for file in *.tgz
 do
     exdir="${file%.tgz}"
@@ -27,144 +90,14 @@ do
     tar xvzf "$file" -C "$exdir" --strip-components=1
 done
 
-for dir in ./*/
-do
-    dir=${dir%*/}
-    cd "$dir"
+mkdir "$outputdir/C"
+mkdir "$outputdir/Java"
+mkdir "$outputdir/C++"
 
-    myarray=(`find ./ -maxdepth $max_depth -name "*.c"`)
-    if [ ${#myarray[@]} -gt 0 ]
-    then
-        cd ".."
-        mv "$dir" "$output/C"
-        continue
-    fi
+max_depth=10
 
-    myarray=(`find ./ -maxdepth $max_depth -name "*.java"`)
-    if [ ${#myarray[@]} -gt 0 ]
-    then
-        cd ".."
-        mv "$dir" "$output/Java"
-        continue
-    fi
-
-    myarray=(`find ./ -maxdepth $max_depth -name "*.cpp"`)
-    if [ ${#myarray[@]} -gt 0 ]
-    then
-        cd ".."
-        mv "$dir" "$output/C++"
-        continue
-    fi
-
-    cd ".."
-done
-
-cd "$output/C++"
-initial="$pwd"
-
-# Find full path of first level directories
-dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
-
-for project in "${dirs[@]}"
-do
-    i=1
-    cd "$project"
-    while [ $i -le $max_depth ]
-    do
-        myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
-        for path in "${myarray[@]}"
-        do
-            # Need to check if files exist inside
-            count=`ls -1 "$path"/*.cpp "$path"/*.h 2>/dev/null | wc -l`
-            if [ $count != 0 ]
-            then 
-                mv "$path"/* "$project"
-                rm -r "$path"
-            fi 
-        done
-        i=$[$i+1]
-    done
-
-    # Delete empty directories
-    myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
-    for emptydir in "${myarray[@]}"
-    do
-        rm -r "$emptydir"
-    done
-
-    cd $initial
-done
-
-cd "$output/Java"
-initial="$pwd"
-
-# Find full path of first level directories
-dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
-
-for project in "${dirs[@]}"
-do
-    i=1
-    cd "$project"
-    while [ $i -le $max_depth ]
-    do
-        myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
-        for path in "${myarray[@]}"
-        do
-            # Need to check if files exist inside
-            count=`ls -1 "$path"/*.java 2>/dev/null | wc -l`
-            if [ $count != 0 ]
-            then 
-                mv "$path"/* "$project"
-                rm -r "$path"
-            fi 
-        done
-        i=$[$i+1]
-    done
-
-    # Delete empty directories
-    myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
-    for emptydir in "${myarray[@]}"
-    do
-        rm -r "$emptydir"
-    done
-
-    cd $initial
-done
-
-cd "$output/C"
-initial="$pwd"
-
-# Find full path of first level directories
-dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
-
-for project in "${dirs[@]}"
-do
-    i=1
-    cd "$project"
-    while [ $i -le $max_depth ]
-    do
-        myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
-        for path in "${myarray[@]}"
-        do
-            # Need to check if files exist inside
-            count=`ls -1 "$path"/*.c "$path"/*.h 2>/dev/null | wc -l`
-            if [ $count != 0 ]
-            then 
-                mv "$path"/* "$project"
-                rm -r "$path"
-            fi 
-        done
-        i=$[$i+1]
-    done
-
-    # Delete empty directories
-    myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
-    for emptydir in "${myarray[@]}"
-    do
-        rm -r "$emptydir"
-    done
-
-    cd $initial
-done
+classify_projects "C" "$inputdir" "$outputdir"
+classify_projects "C++" "$inputdir" "$outputdir"
+classify_projects "Java" "$inputdir" "$outputdir"
 
 printf "\n... done.\n\n"
