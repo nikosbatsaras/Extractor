@@ -5,17 +5,16 @@ then
     echo ""
     echo "Error: Wrong number of arguments"
     echo ""
-    echo "Usage: ./extractor.sh <input> <output>"
-    echo ""
-    echo "        <input>: Path to folder with .tgz files"
-    echo "       <output>: Path to folder of the classified output"
+    echo "Usage: extractor.sh <input> <output>"
+    echo "        <input>: Full path to folder with .tgz files"
+    echo "       <output>: Full path to folder of the classified output"
     echo ""
     exit
 fi
 
 cd "$1"
 output="$2"
-max_depth=5
+max_depth=10
 
 mkdir "$output/C"
 mkdir "$output/Java"
@@ -60,14 +59,112 @@ do
     cd ".."
 done
 
-printf "\n\nListing directories in deeper levels:\n"
+cd "$output/C++"
+initial="$pwd"
 
-i=3
-while [ $i -le $max_depth ]
-do    
-    printf "\n\nListing directories of depth $i:\n\n"
-    find "$output" -maxdepth $i -mindepth $i -type d
-    i=$[$i+1]
+# Find full path of first level directories
+dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+
+for project in "${dirs[@]}"
+do
+    i=1
+    cd "$project"
+    while [ $i -le $max_depth ]
+    do
+        myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
+        for path in "${myarray[@]}"
+        do
+            # Need to check if files exist inside
+            count=`ls -1 "$path"/*.cpp "$path"/*.h 2>/dev/null | wc -l`
+            if [ $count != 0 ]
+            then 
+                mv "$path"/* "$project"
+                rm -r "$path"
+            fi 
+        done
+        i=$[$i+1]
+    done
+
+    # Delete empty directories
+    myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+    for emptydir in "${myarray[@]}"
+    do
+        rm -r "$emptydir"
+    done
+
+    cd $initial
+done
+
+cd "$output/Java"
+initial="$pwd"
+
+# Find full path of first level directories
+dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+
+for project in "${dirs[@]}"
+do
+    i=1
+    cd "$project"
+    while [ $i -le $max_depth ]
+    do
+        myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
+        for path in "${myarray[@]}"
+        do
+            # Need to check if files exist inside
+            count=`ls -1 "$path"/*.java 2>/dev/null | wc -l`
+            if [ $count != 0 ]
+            then 
+                mv "$path"/* "$project"
+                rm -r "$path"
+            fi 
+        done
+        i=$[$i+1]
+    done
+
+    # Delete empty directories
+    myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+    for emptydir in "${myarray[@]}"
+    do
+        rm -r "$emptydir"
+    done
+
+    cd $initial
+done
+
+cd "$output/C"
+initial="$pwd"
+
+# Find full path of first level directories
+dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+
+for project in "${dirs[@]}"
+do
+    i=1
+    cd "$project"
+    while [ $i -le $max_depth ]
+    do
+        myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
+        for path in "${myarray[@]}"
+        do
+            # Need to check if files exist inside
+            count=`ls -1 "$path"/*.c "$path"/*.h 2>/dev/null | wc -l`
+            if [ $count != 0 ]
+            then 
+                mv "$path"/* "$project"
+                rm -r "$path"
+            fi 
+        done
+        i=$[$i+1]
+    done
+
+    # Delete empty directories
+    myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+    for emptydir in "${myarray[@]}"
+    do
+        rm -r "$emptydir"
+    done
+
+    cd $initial
 done
 
 printf "\n... done.\n\n"

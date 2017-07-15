@@ -25,22 +25,40 @@ output-folder
     |
     |---C
     |   |--- project1
+    |   |       |
+    |   |       |---*.c
+    |   |       |---*.h
+    |   |       |
     |   |----project3
+    |   |       |
+    |   |       |---*.c
+    |   |       |---*.h
+    |   |       |
     |   |---- ...
-    |
+    |   |
     |---Java
     |   |--- project2
+    |   |       |
+    |   |       |---*.java
+    |   |       |
     |   |----project5
+    |   |       |
+    |   |       |---*.java
+    |   |       |
     |   |---- ...
-    |
+    |   |
     |---C++
-        |--- project4
-        |----project6
-        |---- ...
+    |   |--- project4
+    |   |       |
+    |   |       |---*.cpp
+    |   |       |---*.h
+    |   |       |
+    |   |----project6
+    |   |       |
+    |   |       |---*.cpp
+    |   |       |---*.h
+    |   |       |
+    |   |---- ...
 ```
-Now projectN is a folder with the name of the initial .tgz file and inside
-holds the source/header files.
-
-At the end, the script also prints all directories that are deeper than those
-in the depicted example. You might want to edit them by hand and the output
-indicates the path to those folders so that you don't have to search for them
+The script will find the source files, even in a really deep directory, and
+place them right under their respective project folder, as shown above
