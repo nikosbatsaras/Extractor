@@ -5,7 +5,7 @@ then
     echo ""
     echo "Error: Wrong number of arguments"
     echo ""
-    echo "Usage: extractor.sh <input> <output>"
+    echo "Usage: ./extractor.sh <input> <output>"
     echo "        <input>: Full path to folder with .tgz files"
     echo "       <output>: Full path to folder of the classified output"
     echo ""
@@ -78,15 +78,15 @@ inputdir="$1"
 outputdir="$2"
 
 declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
-declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java")
-declare -A headers=(["C"]=".h"  ["C++"]=".h"    ["Java"]=".java")
+declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java" )
+declare -A headers=(["C"]=".h"  ["C++"]=".h"    ["Java"]=".java" )
 
 cd "$inputdir"
 for file in *.tgz
 do
     exdir="${file%.tgz}"
     mkdir "$exdir"
-    tar xvzf "$file" -C "$exdir" --strip-components=1
+    tar xzf "$file" -C "$exdir" --strip-components=1
 done
 
 mkdir "$outputdir/C"
@@ -95,8 +95,6 @@ mkdir "$outputdir/Java"
 
 max_depth=10
 
-classify_projects "C" "$inputdir" "$outputdir"
-classify_projects "C++" "$inputdir" "$outputdir"
+classify_projects "C"    "$inputdir" "$outputdir"
+classify_projects "C++"  "$inputdir" "$outputdir"
 classify_projects "Java" "$inputdir" "$outputdir"
-
-printf "\n... done.\n\n"
