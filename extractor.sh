@@ -36,8 +36,7 @@ find_deep_sources() {
                     2>/dev/null | wc -l`
                 if [ $count != 0 ]
                 then 
-                    mv "$path"/* "$project"
-                    rm -r "$path"
+                    cp -r "$path"/* "$project"
                 fi 
             done
             let i++
@@ -91,8 +90,8 @@ do
 done
 
 mkdir "$outputdir/C"
-mkdir "$outputdir/Java"
 mkdir "$outputdir/C++"
+mkdir "$outputdir/Java"
 
 max_depth=10
 
