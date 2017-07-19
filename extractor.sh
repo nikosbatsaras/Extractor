@@ -15,25 +15,25 @@ usage() {
 
 find_deep_sources() {
     cd "$2/$1"
-    initial="$pwd"
+    local initial="$pwd"
 
-    src="${sources[$1]}"
-    hdr="${headers[$1]}"
+    local src="${sources[$1]}"
+    local hdr="${headers[$1]}"
 
     # Find full path of first level directories
-    dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+    local dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
 
     for project in "${dirs[@]}"
     do
-        i=1
+        local i=1
         cd "$project"
         while [ $i -le $max_depth ]
         do
-            myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
+            local myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
             for path in "${myarray[@]}"
             do
                 # Need to check if files exist inside
-                count=`ls -1 "$path"/*"$src" "$path"/*"$hdr" \
+                local count=`ls -1 "$path"/*"$src" "$path"/*"$hdr" \
                     2>/dev/null | wc -l`
                 if [ $count != 0 ]
                 then 
@@ -44,7 +44,7 @@ find_deep_sources() {
         done
 
         # Delete empty directories
-        myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+        local myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
         for emptydir in "${myarray[@]}"
         do
             rm -r "$emptydir"
@@ -58,10 +58,10 @@ classify_projects() {
     cd "$2"
     for dir in ./*/
     do
-        dir=${dir%*/}
+        local dir=${dir%*/}
         cd "$dir"
 
-        myarray=(`find ./ -maxdepth $max_depth -name "${any_src[$1]}"`)
+        local myarray=(`find ./ -maxdepth $max_depth -name "${any_src[$1]}"`)
         if [ ${#myarray[@]} -gt 0 ]
         then
             cd ".."
