@@ -3,13 +3,14 @@
 usage() {
     echo ""
     echo "Usage:"
-    echo "      ./extractor -i <input-folder> -o <output-folder>"
+    echo "      ./extractor.sh -i <input-folder> -o <output-folder>"
     echo ""
     echo "Options:"
-    echo "      -i   <input-folder>    Complete path to folder with compressed projects"
-    echo "      -o   <output-folder>   Complete path to folder that will hold the classified projects"
-    echo "      -h                     Show usage"
+    echo "      -i   Folder with compressed projects"
+    echo "      -o   Folder to hold the classified output"
+    echo "      -h   Show usage"
     echo ""
+
     exit 1
 }
 
@@ -43,7 +44,7 @@ find_deep_sources() {
             let i++
         done
 
-        # Delete empty directories
+        # Delete unwanted directories
         local myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
         for emptydir in "${myarray[@]}"
         do
@@ -81,8 +82,26 @@ outputdir=""
 while getopts ":i:o:h" opt
 do
     case $opt in
-        i) inputdir="$OPTARG";;
-        o) outputdir="$OPTARG";;
+        i) 
+            if [ ! -d "$OPTARG" ]
+            then
+                echo "ERROR: Directory $OPTARG does not exist"
+                exit 1
+            fi
+            cd "$OPTARG"
+            inputdir="`pwd`"
+            cd ".."
+            ;; 
+        o) 
+            if [ ! -d "$OPTARG" ]
+            then
+                echo "ERROR: Directory $OPTARG does not exist"
+                exit 1
+            fi
+            cd "$OPTARG"
+            outputdir="`pwd`"
+            cd ".."
+            ;;
         h) usage; exit 1;;
        \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
         *) echo "Unimplemented option: -$OPTARG" >&2; exit 1;;
@@ -93,14 +112,6 @@ done
 if [ "$inputdir" = "" ] || [ "$outputdir" = "" ]
 then
     usage
-    exit 1
-elif [ ! -d "$inputdir" ]
-then
-    echo "ERROR: Directory $inputdir does not exist"
-    exit 1
-elif [ ! -d "$outputdir" ]
-then
-    echo "ERROR: Directory $outputdir does not exist"
     exit 1
 fi
 
