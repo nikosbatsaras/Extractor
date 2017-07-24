@@ -3,11 +3,12 @@
 usage() {
     echo ""
     echo "Usage:"
-    echo "      ./extractor.sh -i <input-folder> -o <output-folder>"
+    echo "      ./extractor.sh -h"
+    echo "      ./extractor.sh -i <input-dir> -o <output-dir>"
     echo ""
     echo "Options:"
-    echo "      -i   Folder with compressed projects"
-    echo "      -o   Folder to hold the classified output"
+    echo "      -i   Directory with compressed projects"
+    echo "      -o   Directory to hold output"
     echo "      -h   Show usage"
     echo ""
 
@@ -102,18 +103,29 @@ do
             outputdir="`pwd`"
             cd ".."
             ;;
-        h) usage; exit 1;;
-       \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
-        *) echo "Unimplemented option: -$OPTARG" >&2; exit 1;;
-        :) echo "Option -$OPTARG requires an argument." >&2; exit 1;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2; usage;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2; usage;;
+        h|*)
+            usage;;
     esac
 done
 
-if [ "$inputdir" = "" ] || [ "$outputdir" = "" ]
+check=0
+if [ "$inputdir" = "" ]
 then
-    usage
-    exit 1
+    echo "ERROR: Missing input directory"
+    check=1
 fi
+
+if [ "$outputdir" = "" ]
+then
+    echo "ERROR: Missing output directory"
+    check=1
+fi
+
+if [ ! $check -eq 0 ]; then usage; fi
 
 declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java" )
