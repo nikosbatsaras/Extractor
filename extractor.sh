@@ -89,9 +89,8 @@ do
                 echo "ERROR: Directory $OPTARG does not exist"
                 exit 1
             fi
-            cd "$OPTARG"
-            inputdir="`pwd`"
-            cd ".."
+            curr_dir="`pwd`"; cd "$OPTARG"
+            inputdir="`pwd`"; cd "$curr_dir"
             ;; 
         o) 
             if [ ! -d "$OPTARG" ]
@@ -99,9 +98,8 @@ do
                 echo "ERROR: Directory $OPTARG does not exist"
                 exit 1
             fi
-            cd "$OPTARG"
-            outputdir="`pwd`"
-            cd ".."
+            curr_dir="`pwd`"; cd "$OPTARG"
+            outputdir="`pwd`"; cd "$curr_dir"
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2; usage;;
@@ -112,7 +110,6 @@ do
     esac
 done
 
-check=0
 if [ "$inputdir" = "" ]
 then
     echo "ERROR: Missing input directory"
@@ -125,7 +122,7 @@ then
     check=1
 fi
 
-if [ ! $check -eq 0 ]; then usage; fi
+if [ ! -z $check ]; then usage; fi
 
 declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java" )
