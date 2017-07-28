@@ -86,7 +86,7 @@ do
         i) 
             if [ ! -d "$OPTARG" ]
             then
-                echo "ERROR: Directory $OPTARG does not exist"
+                echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
             curr_dir="`pwd`"; cd "$OPTARG"
@@ -95,16 +95,16 @@ do
         o) 
             if [ ! -d "$OPTARG" ]
             then
-                echo "ERROR: Directory $OPTARG does not exist"
+                echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
             curr_dir="`pwd`"; cd "$OPTARG"
             outputdir="`pwd`"; cd "$curr_dir"
             ;;
         \?)
-            echo "Invalid option: -$OPTARG" >&2; usage;;
+            echo "ERROR: Invalid option: -$OPTARG" >&2; usage;;
         :)
-            echo "Option -$OPTARG requires an argument." >&2; usage;;
+            echo "ERROR: Option -$OPTARG requires an argument." >&2; usage;;
         h|*)
             usage;;
     esac
@@ -112,13 +112,13 @@ done
 
 if [ "$inputdir" = "" ]
 then
-    echo "ERROR: Missing input directory"
+    echo "ERROR: Missing input directory" >&2
     check=1
 fi
 
 if [ "$outputdir" = "" ]
 then
-    echo "ERROR: Missing output directory"
+    echo "ERROR: Missing output directory" >&2
     check=1
 fi
 
