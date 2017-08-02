@@ -1,5 +1,22 @@
 #!/bin/bash
 
+##
+# Extractor
+#
+# @author Nick Batsaras <nickbatsaras@gmail.com>
+#
+# A bash script to extract a bunch of .tgz files and classify them based on the
+# source files they contain.
+#
+# TODOs:
+#    1. Add support for more extensions
+#
+##
+
+
+##
+# Prints usage/help message and terminates script
+##
 usage() {
     echo ""
     echo "Usage:"
@@ -15,47 +32,69 @@ usage() {
     exit 1
 }
 
+##
+# Finds all source/header files until max_depth and copies the folder
+# containing them at the right depth, deleting any unwanted directories.
+#
+# @param $1 The programming language
+# @param $2 The output directory
+##
 find_deep_sources() {
     cd "$2/$1"
-    local initial="$pwd"
+    local origin="$pwd"
 
     local src="${sources[$1]}"
     local hdr="${headers[$1]}"
 
     # Find full path of first level directories
-    local dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+    local projects=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
 
-    for project in "${dirs[@]}"
+    for project in "${projects[@]}"
     do
         local i=1
         cd "$project"
         while [ $i -le $max_depth ]
         do
-            local myarray=(`find $PWD -maxdepth $i -mindepth $i -type d`)
-            for path in "${myarray[@]}"
+            local directories=(`find $PWD -maxdepth $i -mindepth $i -type d`)
+            for dir in "${directories[@]}"
             do
                 # Need to check if files exist inside
-                local count=`ls -1 "$path"/*"$src" "$path"/*"$hdr" \
+                local count=`ls -1 "$dir"/*"$src" "$dir"/*"$hdr" \
                     2>/dev/null | wc -l`
                 if [ $count != 0 ]
                 then 
-                    cp -r "$path"/* "$project"
+                    cp -r "$dir"/* "$project"
                 fi 
             done
-            let i++
+            ((i++))
         done
 
         # Delete unwanted directories
-        local myarray=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
-        for emptydir in "${myarray[@]}"
+        local unwanted_dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+        for dir in "${unwanted_dirs[@]}"
         do
-            rm -r "$emptydir"
+            rm -r "$dir"
         done
 
-        cd $initial
+        cd $origin
     done
 }
 
+##
+# Searches each directory for files with specific extensions (.c, .java, etc)
+# and classifies it based on the files it contains.
+#
+# If directory contains .c files, it goes to a C/ directory
+# If directory contains .java files, it goes to a Java/ directory
+# ...
+#
+# Then, proceeds to call find_deep_sources to re-structure the classified
+# directory.
+#
+# @param $1 The programming language
+# @param $2 The input directory
+# @param $3 The output directory
+##
 classify_projects() {
     cd "$2"
     for dir in ./*/
@@ -63,8 +102,8 @@ classify_projects() {
         local dir=${dir%*/}
         cd "$dir"
 
-        local myarray=(`find ./ -maxdepth $max_depth -name "${any_src[$1]}"`)
-        if [ ${#myarray[@]} -gt 0 ]
+        local files=(`find ./ -maxdepth $max_depth -name "${any_src[$1]}"`)
+        if [ ${#files[@]} -gt 0 ]
         then
             cd ".."
             mv "$dir" "$3/$1"
@@ -80,6 +119,7 @@ classify_projects() {
 inputdir=""
 outputdir=""
 
+# Parsing command-line arguments
 while getopts ":i:o:h" opt
 do
     case $opt in
@@ -110,6 +150,7 @@ do
     esac
 done
 
+# Check if input/output options were specified
 if [ "$inputdir" = "" ]
 then
     echo "ERROR: Missing input directory" >&2
@@ -128,6 +169,7 @@ declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java" )
 declare -A headers=(["C"]=".h"  ["C++"]=".h"    ["Java"]=".java" )
 
+# Extract all .tgz files inside input directory
 cd "$inputdir"
 for file in *.tgz
 do
@@ -136,12 +178,18 @@ do
     tar xzf "$file" -C "$exdir" --strip-components=1
 done
 
+# Create directories for classified output
 mkdir "$outputdir/C"
 mkdir "$outputdir/C++"
 mkdir "$outputdir/Java"
 
+##
+# Define maximum depth for use with 'find' function
+# Tune for more simple or complicated directory structures
+##
 max_depth=10
 
+# Classify extracted directories
 classify_projects "C"    "$inputdir" "$outputdir"
 classify_projects "C++"  "$inputdir" "$outputdir"
 classify_projects "Java" "$inputdir" "$outputdir"
