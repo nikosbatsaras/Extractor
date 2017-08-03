@@ -20,13 +20,13 @@
 usage() {
     echo ""
     echo "Usage:"
-    echo "      ./extractor.sh -h"
-    echo "      ./extractor.sh -i <input-dir> -o <output-dir>"
+    echo "      ./extractor.sh [-h] [-d max_depth] -i <input-dir> -o <output-dir>"
     echo ""
     echo "Options:"
+    echo "      -h   Show usage"
+    echo "      -d   Maximum depth to use with 'find' function (defaults to 10)"
     echo "      -i   Directory with compressed projects"
     echo "      -o   Directory to hold output"
-    echo "      -h   Show usage"
     echo ""
 
     exit 1
@@ -119,10 +119,18 @@ classify_projects() {
 inputdir=""
 outputdir=""
 
-# Parsing command-line arguments
-while getopts ":i:o:h" opt
+# Parse command-line arguments
+while getopts ":d:i:o:h" opt
 do
     case $opt in
+        d) 
+            if [ ! $OPTARG -gt 0 ]
+            then
+                echo "ERROR: Option -$opt must take a positive argument" >&2
+                exit 1
+            fi
+            max_depth=$OPTARG
+            ;; 
         i) 
             if [ ! -d "$OPTARG" ]
             then
@@ -145,7 +153,7 @@ do
             echo "ERROR: Invalid option: -$OPTARG" >&2; usage;;
         :)
             echo "ERROR: Option -$OPTARG requires an argument." >&2; usage;;
-        h|*)
+        h | *)
             usage;;
     esac
 done
@@ -165,6 +173,13 @@ fi
 
 if [ ! -z $check ]; then usage; fi
 
+##
+# Define maximum depth for use with 'find' function
+# Tune for more simple or complicated directory structures
+# If user did not specify a value for max_depth, give a default value of 10
+##
+if [ -z $max_depth ]; then max_depth=10; fi
+
 declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java" )
 declare -A headers=(["C"]=".h"  ["C++"]=".h"    ["Java"]=".java" )
@@ -182,12 +197,6 @@ done
 mkdir "$outputdir/C"
 mkdir "$outputdir/C++"
 mkdir "$outputdir/Java"
-
-##
-# Define maximum depth for use with 'find' function
-# Tune for more simple or complicated directory structures
-##
-max_depth=10
 
 # Classify extracted directories
 classify_projects "C"    "$inputdir" "$outputdir"
