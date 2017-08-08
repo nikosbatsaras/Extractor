@@ -47,7 +47,7 @@ find_deep_sources() {
     local hdr="${headers[$1]}"
 
     # Find full path of first level directories
-    local projects=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+    local projects=(`find "$PWD" -maxdepth 1 -mindepth 1 -type d`)
 
     for project in "${projects[@]}"
     do
@@ -55,7 +55,7 @@ find_deep_sources() {
         cd "$project"
         while [ $i -le $max_depth ]
         do
-            local directories=(`find $PWD -maxdepth $i -mindepth $i -type d`)
+            local directories=(`find "$PWD" -maxdepth $i -mindepth $i -type d`)
             for dir in "${directories[@]}"
             do
                 # Need to check if files exist inside
@@ -70,13 +70,18 @@ find_deep_sources() {
         done
 
         # Delete unwanted directories
-        local unwanted_dirs=(`find $PWD -maxdepth 1 -mindepth 1 -type d`)
+        local unwanted_dirs=()
+        while IFS=  read -r -d $'\0'
+        do
+            unwanted_dirs+=("$REPLY")
+        done < <(find "$PWD" -maxdepth 1 -mindepth 1 -type d -print0)
+
         for dir in "${unwanted_dirs[@]}"
         do
             rm -r "$dir"
         done
 
-        cd $origin
+        cd "$origin"
     done
 }
 
