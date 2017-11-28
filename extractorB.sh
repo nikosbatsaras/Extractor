@@ -49,7 +49,8 @@ source "./restructure.sh"
 #
 # @param $1 The programming language
 # @param $2 The input directory
-# @param $3 The output directory
+# @param $3 The current phase directory
+# @param $4 The previous phase directory
 ##
 classify() {
     cd "$2"
@@ -58,20 +59,24 @@ classify() {
         local dir=${dir%*/}
         cd "$dir"
 
-
         local files=(`find . -name "${sources[$1]}"`)
         if [ ${#files[@]} -gt 0 ]
         then
 
             for dir2 in `ls`
             do
-                # Check for ph-like project
                 if [ ! -d "$dir2" ]
                 then
+                    res=(`grep "TEST" "$dir2"`) # Need to add a cli switch
+                    if [ ${#res[@]} -gt 0 ]
+                    then
+                        # Maybe mv ?!
+                        cp "$dir2" "$4"/"$1"/"`basename $dir`"
+                        rm "$dir2"
+                    fi
                     continue
                 fi
 
-                # local dir2=${dir2%*/}
                 cd "$dir2"
 
                 res=(`grep -r "TEST"`) # Need to add a cli switch
