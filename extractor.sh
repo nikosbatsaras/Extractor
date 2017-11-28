@@ -18,15 +18,15 @@
 # Prints usage/help message and terminates script
 ##
 usage() {
-    echo ""
+    echo
     echo "Usage:"
-    echo "      ./extractor.sh [-h] -i <input-dir> -o <output-dir>"
-    echo ""
+    echo "      ./extractor.sh -i <input-dir> -o <output-dir> [-h]"
+    echo
     echo "Options:"
-    echo "      -h   Show usage"
     echo "      -i   Directory with compressed projects"
     echo "      -o   Directory to hold output"
-    echo ""
+    echo "      -h   Show usage"
+    echo
 
     exit 1
 }
@@ -56,7 +56,7 @@ restructure() {
         for dir in "${directories[@]}"
         do
             # Need to check if files exist inside
-            local num=`ls -1 "$dir"/*"$src" "$dir"/*"$hdr" 2>/dev/null | wc -l`
+            local num=`ls -1 "$dir"/$src "$dir"/$hdr 2>/dev/null | wc -l`
             if [ $num != 0 ]
             then 
                 cp -r "$dir"/* "$project"
@@ -101,7 +101,7 @@ classify() {
         local dir=${dir%*/}
         cd "$dir"
 
-        local files=(`find . -name "${any_src[$1]}"`)
+        local files=(`find . -name "${sources[$1]}"`)
         if [ ${#files[@]} -gt 0 ]
         then
             cd ".."
@@ -164,9 +164,8 @@ fi
 
 if [ ! -z $check ]; then usage; fi
 
-declare -A any_src=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
-declare -A sources=(["C"]=".c"  ["C++"]=".cpp"  ["Java"]=".java" )
-declare -A headers=(["C"]=".h"  ["C++"]=".h"    ["Java"]=".java" )
+declare -A sources=(["C"]="*.c" ["C++"]="*.c[(c)|(pp)|(xx)]" ["Java"]="*.java")
+declare -A headers=(["C"]="*.h" ["C++"]="*.h(h)?"            ["Java"]="*.java")
 
 # Extract all .tgz files inside input directory
 cd "$inputdir"
@@ -174,7 +173,7 @@ for file in *.tgz
 do
     exdir="${file%.tgz}"
     mkdir "$exdir"
-    tar xzf "$file" -C "$exdir" --strip-components=1
+    tar xzf "$file" -C "$exdir"
 done
 
 # Create directories for classified output
