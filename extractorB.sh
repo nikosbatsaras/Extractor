@@ -1,12 +1,31 @@
 #!/bin/bash
 
 ##
+#
 # Extractor
+# =========
+#
+# 
+# This script is part of a collection of scripts used mainly for the purposes
+# of CS-240 (Data Structures) at University of Crete, Computer Science Department.
+#
+# The main goal is to automate the process of:
+#   1) Extracting all the student submitted projects
+#   2) Classify them based on what programming language was used
+#   3) Re-structure the extracted and classified projects path
+#   4) In case a student re-submits the 1rst phase of the project
+#      at phase 2, take into account the latter submission for phase 1
+#
+#
+# @file   extractorB.sh
 #
 # @author Nick Batsaras <nickbatsaras@gmail.com>
 #
-# A bash script to extract a bunch of .tgz files and classify them based on the
-# source files they contain.
+# @desc   A script to extract a group of .tgz files and classify them based on
+#         the source files they contain. This script can also replace an old
+#         version of a project with the new version found the the current
+#         directory. To achive that, it uses a user-provided query, that
+#         distinguishes phase A and phase B of the project.
 #
 # TODOs:
 #    1. Add support for more extensions
@@ -20,12 +39,13 @@
 usage() {
     echo
     echo "Usage:"
-    echo "      ./extractor.sh -i <input-dir> -c <output-current> -p <output-previous> [-h]"
+    echo "      ./extractorB.sh -i <input-dir> -c <output-current> -p <output-previous> -q <query> [-h]"
     echo
     echo "Options:"
     echo "      -i   Directory with compressed projects"
     echo "      -c   Directory to hold output of current-phase"
-    echo "      -p   Directory to hold output of preivous-phase"
+    echo "      -p   Directory to hold output of previous-phase"
+    echo "      -q   Query for phase 1"
     echo "      -h   Show usage"
     echo
 
@@ -33,12 +53,17 @@ usage() {
 }
 
 
+##
+# Includes the script for the restructure function
+##
 source "./restructure.sh"
 
 
 ##
 # Searches each directory for files with specific extensions (.c, .java, etc)
 # and classifies it based on the files it contains.
+# In case a re-submission is detected (using the provided query), it updates
+# the files of the phase-A submission with the new ones.
 #
 # If directory contains .c files, it goes to a C/ directory
 # If directory contains .java files, it goes to a Java/ directory
@@ -51,6 +76,7 @@ source "./restructure.sh"
 # @param $2 The input directory
 # @param $3 The current phase directory
 # @param $4 The previous phase directory
+# @param $5 The query
 ##
 classify() {
     cd "$2"
@@ -67,7 +93,7 @@ classify() {
             do
                 if [ ! -d "$dir2" ]
                 then
-                    res=(`grep "TEST" "$dir2"`) # Need to add a cli switch
+                    res=(`grep "$5" "$dir2"`)
                     if [ ${#res[@]} -gt 0 ]
                     then
                         # Maybe mv ?!
@@ -79,7 +105,7 @@ classify() {
 
                 cd "$dir2"
 
-                res=(`grep -r "TEST"`) # Need to add a cli switch
+                res=(`grep -r "$5"`)
                 if [ ${#res[@]} -gt 0 ]
                 then
                     local tocopy="`pwd`"
@@ -103,13 +129,14 @@ classify() {
     restructure "$1" "$3"
     restructure "$1" "$4"
 }
-
+ 
+query=""
 inputdir=""
 currPhase=""
 prevPhase=""
 
 # Parse command-line arguments
-while getopts ":i:c:p:h" opt
+while getopts ":i:c:p:q:h" opt
 do
     case $opt in
         i) 
@@ -139,7 +166,9 @@ do
             curr_dir="`pwd`"; cd "$OPTARG"
             prevPhase="`pwd`"; cd "$curr_dir"
             ;;
-        \?)
+        q) 
+            query="$OPTARG";;
+       \?)
             echo "ERROR: Invalid option: -$OPTARG" >&2; usage;;
         :)
             echo "ERROR: Option -$OPTARG requires an argument." >&2; usage;;
@@ -167,6 +196,12 @@ then
     check=1
 fi
 
+if [ "$query" = "" ]
+then
+    echo "ERROR: Missing query" >&2
+    check=1
+fi
+
 if [ ! -z $check ]; then usage; fi
 
 declare -A sources=(["C"]="*.c" ["C++"]="*.c[(c)|(pp)|(xx)]" ["Java"]="*.java")
@@ -187,6 +222,6 @@ mkdir "$currPhase/C++"
 mkdir "$currPhase/Java"
 
 # Classify extracted directories
-classify "C"    "$inputdir" "$currPhase" "$prevPhase"
-classify "C++"  "$inputdir" "$currPhase" "$prevPhase"
-classify "Java" "$inputdir" "$currPhase" "$prevPhase"
+classify "C"    "$inputdir" "$currPhase" "$prevPhase" "$query"
+classify "C++"  "$inputdir" "$currPhase" "$prevPhase" "$query"
+classify "Java" "$inputdir" "$currPhase" "$prevPhase" "$query"

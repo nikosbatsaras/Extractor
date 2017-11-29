@@ -1,12 +1,28 @@
 #!/bin/bash
 
 ##
+#
 # Extractor
+# =========
+#
+# 
+# This script is part of a collection of scripts used mainly for the purposes
+# of CS-240 (Data Structures) at University of Crete, Computer Science Department.
+#
+# The main goal is to automate the process of:
+#   1) Extracting all the student submitted projects
+#   2) Classify them based on what programming language was used
+#   3) Re-structure the extracted and classified projects path
+#   4) In case a student re-submits the 1rst phase of the project
+#      at phase 2, take into account the latter submission for phase 1
+#
+#
+# @file   extractorA.sh
 #
 # @author Nick Batsaras <nickbatsaras@gmail.com>
 #
-# A bash script to extract a bunch of .tgz files and classify them based on the
-# source files they contain.
+# @desc   A script to extract a group of .tgz files and classify them based on
+#         the source files they contain.
 #
 # TODOs:
 #    1. Add support for more extensions
@@ -20,7 +36,7 @@
 usage() {
     echo
     echo "Usage:"
-    echo "      ./extractor.sh -i <input-dir> -o <output-dir> [-h]"
+    echo "      ./extractorA.sh -i <input-dir> -o <output-dir> [-h]"
     echo
     echo "Options:"
     echo "      -i   Directory with compressed projects"
@@ -32,6 +48,9 @@ usage() {
 }
 
 
+##
+# Includes the script for the restructure function
+##
 source "./restructure.sh"
 
 
@@ -96,7 +115,7 @@ do
             curr_dir="`pwd`"; cd "$OPTARG"
             outputdir="`pwd`"; cd "$curr_dir"
             ;;
-        \?)
+       \?)
             echo "ERROR: Invalid option: -$OPTARG" >&2; usage;;
         :)
             echo "ERROR: Option -$OPTARG requires an argument." >&2; usage;;

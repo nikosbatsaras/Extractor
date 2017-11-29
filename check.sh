@@ -1,5 +1,44 @@
 #!/bin/bash
 
+##
+#
+# Extractor
+# =========
+#
+# 
+# This script is part of a collection of scripts used mainly for the purposes
+# of CS-240 (Data Structures) at University of Crete, Computer Science Department.
+#
+# The main goal is to automate the process of:
+#   1) Extracting all the student submitted projects
+#   2) Classify them based on what programming language was used
+#   3) Re-structure the extracted and classified projects path
+#   4) In case a student re-submits the 1rst phase of the project
+#      at phase 2, take into account the latter submission for phase 1
+#
+#
+# @file   check.sh
+#
+# @author Nick Batsaras <nickbatsaras@gmail.com>
+#
+# @desc   This script is used to check the quality of a query.
+#         A query is used to distinguish between phase 1 and phase 2 of a
+#         project. The query is supposed to be a keyword that exists in every
+#         project (folder) of phase 1 BUT not in any project of phase 2.
+#         An example could be a data structure used only in phase 1, etc
+#
+#         The reasoning behind the query, is to avoid setting a strict rule to
+#         how the students submit the projects. They never do it as told!
+#
+# TODOs:
+#    1. Add support for more extensions
+#
+##
+
+
+##
+# Prints usage/help message and terminates script
+##
 usage() {
     echo
     echo "Usage:"
