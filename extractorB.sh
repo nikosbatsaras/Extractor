@@ -110,6 +110,10 @@ classify() {
                 then
                     local tocopy="`pwd`"
                     cd ".."
+                    if [ ! -d "$4"/"$1"/"`basename $dir`" ]
+                    then
+                        mkdir "$4"/"$1"/"`basename $dir`"
+                    fi
                     rm -rf "$4"/"$1"/"`basename $dir`"/*
                     cp -r "$tocopy"/* "$4"/"$1"/"`basename $dir`"
                     rm -rf "$tocopy"
@@ -204,14 +208,14 @@ fi
 
 if [ ! -z $check ]; then usage; fi
 
-declare -A sources=(["C"]="*.c" ["C++"]="*.c[(c)|(pp)|(xx)]" ["Java"]="*.java")
-declare -A headers=(["C"]="*.h" ["C++"]="*.h(h)?"            ["Java"]="*.java")
+declare -A sources=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
+declare -A headers=(["C"]="*.h" ["C++"]="*.h"   ["Java"]="*.java")
 
 # Extract all .tgz files inside input directory
 cd "$inputdir"
 for file in *.tgz
 do
-    exdir="${file%%-*}"
+    exdir="${file%%.*}"
     mkdir "$exdir" 2> /dev/null
     tar xzf "$file" -C "$exdir"
 done
