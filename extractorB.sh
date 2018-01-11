@@ -105,18 +105,22 @@ classify() {
 
                 cd "$dir2"
 
-                res=(`grep -r "$5"`)
+                res=(`grep -r "$5" "$PWD" | awk '{print $1}' | tr -d :`)
                 if [ ${#res[@]} -gt 0 ]
                 then
-                    local tocopy="`pwd`"
                     cd ".."
                     if [ ! -d "$4"/"$1"/"`basename $dir`" ]
                     then
                         mkdir "$4"/"$1"/"`basename $dir`"
                     fi
                     rm -rf "$4"/"$1"/"`basename $dir`"/*
-                    cp -r "$tocopy"/* "$4"/"$1"/"`basename $dir`"
-                    rm -rf "$tocopy"
+
+                    for fl in "${res[@]}"
+                    do
+                        cp -r "`dirname $fl`" "$4"/"$1"/"`basename $dir`"/ 2> /dev/null
+                        rm -rf "`dirname $fl`"
+                    done
+
                     continue
                 fi
                 cd ".."
