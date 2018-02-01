@@ -4,15 +4,15 @@
 #
 # Extractor
 # =========
-#
 # 
-# This script is part of a collection of scripts used mainly for the purposes
-# of CS-240 (Data Structures) at University of Crete, Computer Science Department.
+#
+# This script is used for the purposes of CS-240 (Data Structures) at
+# University of Crete, Computer Science Department.
 #
 # The main goal is to automate the process of:
 #   1) Extracting all the student submitted projects
 #   2) Classify them based on what programming language was used
-#   3) Re-structure the extracted and classified projects path
+#   3) Re-structure the directory tree of the extracted and classified projects
 #   4) In case a student re-submits the 1rst phase of the project
 #      at phase 2, take into account the latter submission for phase 1
 #
@@ -22,13 +22,12 @@
 # @author Nick Batsaras <nickbatsaras@gmail.com>
 #
 # @desc   A script to extract a group of .tgz files and classify them based on
-#         the source files they contain. This script can also replace an old
-#         version of a project with the new version found the the current
-#         directory. To achive that, it uses a user-provided query, that
-#         distinguishes phase A and phase B of the project.
+#         the source files they contain.
+#         Update/replace phase1 files in case of resubmission.
 #
 # TODOs:
 #    1. Add support for more extensions
+#    2. Add support for regular expressions
 #
 ##
 
@@ -39,12 +38,12 @@
 usage() {
     echo
     echo "Usage:"
-    echo "      ./extractorB.sh -i <input-dir> -c <output-current> -p <output-previous> -q <query> [-h]"
+    echo "      ./extractorB.sh -i <input-dir> -a <phase1-output> -b <phase2-output> -q <query> [-h]"
     echo
     echo "Options:"
     echo "      -i   Directory with compressed projects"
-    echo "      -c   Directory to hold output of current-phase"
-    echo "      -p   Directory to hold output of previous-phase"
+    echo "      -a   Directory to hold output of phase 1"
+    echo "      -b   Directory to hold output of phase 2"
     echo "      -q   Query for phase 1"
     echo "      -h   Show usage"
     echo
@@ -56,7 +55,7 @@ usage() {
 ##
 # Includes the script for the restructure function
 ##
-source "./restructure.sh"
+source ~/Extractor/restructure.sh
 
 
 ##
@@ -74,8 +73,8 @@ source "./restructure.sh"
 #
 # @param $1 The programming language
 # @param $2 The input directory
-# @param $3 The current phase directory
-# @param $4 The previous phase directory
+# @param $3 The phase 2 directory
+# @param $4 The phase 1 directory
 # @param $5 The query
 ##
 classify() {
@@ -140,8 +139,8 @@ classify() {
  
 query=""
 inputdir=""
-currPhase=""
-prevPhase=""
+phase1=""
+phase2=""
 
 # Parse command-line arguments
 while getopts ":i:c:p:q:h" opt
@@ -156,23 +155,23 @@ do
             curr_dir="`pwd`"; cd "$OPTARG"
             inputdir="`pwd`"; cd "$curr_dir"
             ;; 
-        c) 
+        a) 
             if [ ! -d "$OPTARG" ]
             then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
             curr_dir="`pwd`"; cd "$OPTARG"
-            currPhase="`pwd`"; cd "$curr_dir"
+            phase1="`pwd`"; cd "$curr_dir"
             ;;
-        p) 
+        b) 
             if [ ! -d "$OPTARG" ]
             then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
             curr_dir="`pwd`"; cd "$OPTARG"
-            prevPhase="`pwd`"; cd "$curr_dir"
+            phase2="`pwd`"; cd "$curr_dir"
             ;;
         q) 
             query="$OPTARG";;
@@ -192,15 +191,15 @@ then
     check=1
 fi
 
-if [ "$currPhase" = "" ]
+if [ "$phase1" = "" ]
 then
-    echo "ERROR: Missing output directory of current phase" >&2
+    echo "ERROR: Missing output directory of phase 1" >&2
     check=1
 fi
 
-if [ "$prevPhase" = "" ]
+if [ "$phase2" = "" ]
 then
-    echo "ERROR: Missing output directory of previous phase" >&2
+    echo "ERROR: Missing output directory of phase 2" >&2
     check=1
 fi
 
@@ -225,11 +224,11 @@ do
 done
 
 # Create directories for classified output
-mkdir "$currPhase/C"
-mkdir "$currPhase/C++"
-mkdir "$currPhase/Java"
+mkdir "$phase2/C"
+mkdir "$phase2/C++"
+mkdir "$phase2/Java"
 
 # Classify extracted directories
-classify "C"    "$inputdir" "$currPhase" "$prevPhase" "$query"
-classify "C++"  "$inputdir" "$currPhase" "$prevPhase" "$query"
-classify "Java" "$inputdir" "$currPhase" "$prevPhase" "$query"
+classify "C"    "$inputdir" "$phase2" "$phase1" "$query"
+classify "C++"  "$inputdir" "$phase2" "$phase1" "$query"
+classify "Java" "$inputdir" "$phase2" "$phase1" "$query"

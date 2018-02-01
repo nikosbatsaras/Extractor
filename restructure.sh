@@ -4,15 +4,15 @@
 #
 # Extractor
 # =========
-#
 # 
-# This script is part of a collection of scripts used mainly for the purposes
-# of CS-240 (Data Structures) at University of Crete, Computer Science Department.
+#
+# This script is used for the purposes of CS-240 (Data Structures) at
+# University of Crete, Computer Science Department.
 #
 # The main goal is to automate the process of:
 #   1) Extracting all the student submitted projects
 #   2) Classify them based on what programming language was used
-#   3) Re-structure the extracted and classified projects path
+#   3) Re-structure the directory tree of the extracted and classified projects
 #   4) In case a student re-submits the 1rst phase of the project
 #      at phase 2, take into account the latter submission for phase 1
 #
@@ -24,9 +24,6 @@
 # @desc   A script to re-structure the extracted and classified output.
 #         This script is used internally. You are not supposed to execute it
 #         manually.
-#
-# TODOs:
-#    1. Add support for more extensions
 #
 ##
 
