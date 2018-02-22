@@ -143,7 +143,7 @@ phase1=""
 phase2=""
 
 # Parse command-line arguments
-while getopts ":i:c:p:q:h" opt
+while getopts ":i:a:b:q:h" opt
 do
     case $opt in
         i) 
