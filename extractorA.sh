@@ -129,16 +129,14 @@ done
 if [ "$inputdir" = "" ]
 then
     echo "ERROR: Missing input directory" >&2
-    check=1
+    usage
 fi
 
 if [ "$outputdir" = "" ]
 then
     echo "ERROR: Missing output directory" >&2
-    check=1
+    usage
 fi
-
-if [ ! -z $check ]; then usage; fi
 
 declare -A sources=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A headers=(["C"]="*.h" ["C++"]="*.h"   ["Java"]="*.java")

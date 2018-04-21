@@ -188,28 +188,26 @@ done
 if [ "$inputdir" = "" ]
 then
     echo "ERROR: Missing input directory" >&2
-    check=1
+    usage
 fi
 
 if [ "$phase1" = "" ]
 then
     echo "ERROR: Missing output directory of phase 1" >&2
-    check=1
+    usage
 fi
 
 if [ "$phase2" = "" ]
 then
     echo "ERROR: Missing output directory of phase 2" >&2
-    check=1
+    usage
 fi
 
 if [ "$query" = "" ]
 then
     echo "ERROR: Missing query" >&2
-    check=1
+    usage
 fi
-
-if [ ! -z $check ]; then usage; fi
 
 declare -A sources=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A headers=(["C"]="*.h" ["C++"]="*.h"   ["Java"]="*.java")
