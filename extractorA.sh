@@ -91,31 +91,22 @@ classify() {
     restructure "$1" "$3"
 }
 
-inputdir=""
-outputdir=""
-
 # Parse command-line arguments
 while getopts ":i:o:h" opt
 do
     case $opt in
         i) 
-            if [ ! -d "$OPTARG" ]
-            then
+            if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            curr_dir="`pwd`"; cd "$OPTARG"
-            inputdir="`pwd`"; cd "$curr_dir"
-            ;; 
+            cd "$OPTARG"; inputdir="`pwd`"; cd - ;; 
         o) 
-            if [ ! -d "$OPTARG" ]
-            then
+            if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            curr_dir="`pwd`"; cd "$OPTARG"
-            outputdir="`pwd`"; cd "$curr_dir"
-            ;;
+            cd "$OPTARG"; outputdir="`pwd`"; cd - ;;
        \?)
             echo "ERROR: Invalid option: -$OPTARG" >&2; usage;;
         :)
@@ -126,14 +117,12 @@ do
 done
 
 # Check if input/output options were specified
-if [ "$inputdir" = "" ]
-then
+if [ -z "$inputdir" ]; then
     echo "ERROR: Missing input directory" >&2
     usage
 fi
 
-if [ "$outputdir" = "" ]
-then
+if [ -z "$outputdir" ]; then
     echo "ERROR: Missing output directory" >&2
     usage
 fi

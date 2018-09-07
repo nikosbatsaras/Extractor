@@ -55,8 +55,7 @@ while getopts ":d:q:h" opt
 do
     case $opt in
         d) 
-            if [ ! -d "$OPTARG" ]
-            then
+            if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
@@ -73,14 +72,12 @@ do
 done
 
 # Check if query option was specified
-if [ -z $directory ]
-then
+if [ -z $directory ]; then
     echo "ERROR: Directory not specified" >&2
     usage
 fi
 
-if [ -z $query ]
-then
+if [ -z $query ]; then
     echo "ERROR: Query not specified" >&2
     usage
 fi

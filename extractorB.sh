@@ -137,42 +137,28 @@ classify() {
     restructure "$1" "$4"
 }
  
-query=""
-inputdir=""
-phase1=""
-phase2=""
-
 # Parse command-line arguments
 while getopts ":i:a:b:q:h" opt
 do
     case $opt in
         i) 
-            if [ ! -d "$OPTARG" ]
-            then
+            if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            curr_dir="`pwd`"; cd "$OPTARG"
-            inputdir="`pwd`"; cd "$curr_dir"
-            ;; 
+            cd "$OPTARG"; inputdir="`pwd`"; cd - ;; 
         a) 
-            if [ ! -d "$OPTARG" ]
-            then
+            if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            curr_dir="`pwd`"; cd "$OPTARG"
-            phase1="`pwd`"; cd "$curr_dir"
-            ;;
+            cd "$OPTARG"; phase1="`pwd`"; cd - ;;
         b) 
-            if [ ! -d "$OPTARG" ]
-            then
+            if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            curr_dir="`pwd`"; cd "$OPTARG"
-            phase2="`pwd`"; cd "$curr_dir"
-            ;;
+            cd "$OPTARG"; phase2="`pwd`"; cd - ;;
         q) 
             query="$OPTARG";;
        \?)
@@ -185,26 +171,22 @@ do
 done
 
 # Check if input/output options were specified
-if [ "$inputdir" = "" ]
-then
+if [ -z "$inputdir" ]; then
     echo "ERROR: Missing input directory" >&2
     usage
 fi
 
-if [ "$phase1" = "" ]
-then
+if [ -z "$phase1" ]; then
     echo "ERROR: Missing output directory of phase 1" >&2
     usage
 fi
 
-if [ "$phase2" = "" ]
-then
+if [ -z "$phase2" ]; then
     echo "ERROR: Missing output directory of phase 2" >&2
     usage
 fi
 
-if [ "$query" = "" ]
-then
+if [ -z "$query" ]; then
     echo "ERROR: Missing query" >&2
     usage
 fi
