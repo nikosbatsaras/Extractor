@@ -75,8 +75,7 @@ usage() {
 ##
 # Includes the script for the restructure function
 ##
-source ~/Extractor/restructure.sh
-
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"/restructure.sh
 
 ##
 # Searches each directory for files with specific extensions (.c, .java, etc)
