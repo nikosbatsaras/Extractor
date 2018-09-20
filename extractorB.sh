@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
 #
@@ -111,12 +111,13 @@ classify() {
             do
                 if [ ! -d "$dir2" ]
                 then
-                    res=(`grep "$5" "$dir2"`)
+                    res=(`grep "$5" "$dir2" &> /dev/null`)
                     if [ ${#res[@]} -gt 0 ]
                     then
                         # Maybe mv ?!
                         cp "$dir2" "$4"/"$1"/"`basename $dir`"
                         rm "$dir2"
+			((updated++))
                     fi
                     continue
                 fi
@@ -139,6 +140,7 @@ classify() {
                         rm -rf "`dirname $fl`"
                     done
 
+		    ((updated++))
                     continue
                 fi
                 cd ".."
@@ -146,6 +148,7 @@ classify() {
 
             cd ".."
             mv "$dir" "$3/$1"
+	    ((classified++))
             continue
         fi
 
@@ -165,19 +168,19 @@ do
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            cd "$OPTARG"; inputdir="`pwd`"; cd - ;; 
+            cd "$OPTARG"; inputdir="`pwd`"; cd - &> /dev/null;; 
         a) 
             if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            cd "$OPTARG"; phase1="`pwd`"; cd - ;;
+            cd "$OPTARG"; phase1="`pwd`"; cd - &> /dev/null;;
         b) 
             if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            cd "$OPTARG"; phase2="`pwd`"; cd - ;;
+            cd "$OPTARG"; phase2="`pwd`"; cd - &> /dev/null;;
         q) 
             query="$OPTARG";;
        \?)
@@ -213,6 +216,8 @@ fi
 declare -A sources=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A headers=(["C"]="*.h" ["C++"]="*.h"   ["Java"]="*.java")
 
+echo -n "Extracting .... "
+
 # Extract all .tgz files inside input directory
 cd "$inputdir"
 for file in *.tgz
@@ -222,12 +227,28 @@ do
     tar xzf "$file" -C "$exdir"
 done
 
+echo "DONE!"
+
+echo -n "Classifying ... "
+
 # Create directories for classified output
 mkdir "$phase2/C"
 mkdir "$phase2/C++"
 mkdir "$phase2/Java"
 
+classified=0
+updated=0
+
 # Classify extracted directories
 classify "C"    "$inputdir" "$phase2" "$phase1" "$query"
 classify "C++"  "$inputdir" "$phase2" "$phase1" "$query"
 classify "Java" "$inputdir" "$phase2" "$phase1" "$query"
+
+echo "DONE!"
+echo
+echo " Total:      $(ls -l $inputdir | grep .tgz | wc -l)"
+echo " Resubs:     $updated"
+echo " Classified: $classified"
+echo
+echo "Output saved in: $phase1 and $phase2"
+echo

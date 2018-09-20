@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
 #
@@ -101,6 +101,7 @@ classify() {
         then
             cd ".."
             mv "$dir" "$3/$1"
+	    ((classified++))
             continue
         fi
 
@@ -119,13 +120,13 @@ do
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            cd "$OPTARG"; inputdir="`pwd`"; cd - ;; 
+            cd "$OPTARG"; inputdir="`pwd`"; cd - &> /dev/null;; 
         o) 
             if [ ! -d "$OPTARG" ]; then
                 echo "ERROR: Directory $OPTARG does not exist" >&2
                 exit 1
             fi
-            cd "$OPTARG"; outputdir="`pwd`"; cd - ;;
+            cd "$OPTARG"; outputdir="`pwd`"; cd - &> /dev/null;;
        \?)
             echo "ERROR: Invalid option: -$OPTARG" >&2; usage;;
         :)
@@ -149,6 +150,8 @@ fi
 declare -A sources=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
 declare -A headers=(["C"]="*.h" ["C++"]="*.h"   ["Java"]="*.java")
 
+echo -n "Extracting .... "
+
 # Extract all .tgz files inside input directory
 cd "$inputdir"
 for file in *.tgz
@@ -158,12 +161,26 @@ do
     tar xzf "$file" -C "$exdir"
 done
 
+echo "DONE!"
+
+echo -n "Classifying ... "
+
 # Create directories for classified output
 mkdir "$outputdir/C"
 mkdir "$outputdir/C++"
 mkdir "$outputdir/Java"
 
+classified=0
+
 # Classify extracted directories
 classify "C"    "$inputdir" "$outputdir"
 classify "C++"  "$inputdir" "$outputdir"
 classify "Java" "$inputdir" "$outputdir"
+
+echo "DONE!"
+echo
+echo " Total:      $(ls -l $inputdir | grep .tgz | wc -l)"
+echo " Classified: $classified"
+echo
+echo "Output saved in: $outputdir"
+echo
