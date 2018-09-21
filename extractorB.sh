@@ -120,19 +120,17 @@ classify() {
 
                 cd "$dir2"
 
-                res=(`grep -r "$5" "$PWD" | awk '{print $1}' | tr -d :`)
+                res=(`grep -r "$5" "$PWD" | awk '{print $1}' | cut -f1 -d":" | uniq`)
                 if [ ${#res[@]} -gt 0 ]
                 then
                     cd ".."
-                    if [ ! -d "$4"/"$1"/"`basename $dir`" ]
-                    then
-                        mkdir "$4"/"$1"/"`basename $dir`"
-                    fi
+
+                    mkdir -p "$4"/"$1"/"`basename $dir`"
                     rm -rf "$4"/"$1"/"`basename $dir`"/*
 
                     for fl in "${res[@]}"
                     do
-                        cp -r "`dirname $fl`" "$4"/"$1"/"`basename $dir`"/ 2> /dev/null
+                        cp -r "`dirname $fl`" "$4"/"$1"/"`basename $dir`"/
                         rm -rf "`dirname $fl`"
                     done
 
