@@ -158,6 +158,8 @@ done
 
 echo "DONE!"
 
+find "$inputdir" -name "* *" -type d | rename 's/ /_/g'
+
 echo -n "Classifying ... "
 
 # Create directories for classified output
