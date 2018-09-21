@@ -236,9 +236,6 @@ mkdir "$phase2/C"
 mkdir "$phase2/C++"
 mkdir "$phase2/Java"
 
-classified=0
-updated=0
-
 # Classify extracted directories
 classify "C"    "$inputdir" "$phase2" "$phase1" "$query"
 classify "C++"  "$inputdir" "$phase2" "$phase1" "$query"
@@ -246,9 +243,9 @@ classify "Java" "$inputdir" "$phase2" "$phase1" "$query"
 
 echo "DONE!"
 echo
-echo " Total:      $(ls -l $inputdir | grep .tgz | wc -l)"
 echo " Resubs:     $updated"
 echo " Classified: $classified"
+echo " Total:      $(ls -l $inputdir | grep .tgz | wc -l)"
 echo
 echo "Output saved in: $phase1 and $phase2"
 echo

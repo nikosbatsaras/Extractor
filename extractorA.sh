@@ -170,8 +170,6 @@ mkdir "$outputdir/C"
 mkdir "$outputdir/C++"
 mkdir "$outputdir/Java"
 
-classified=0
-
 # Classify extracted directories
 classify "C"    "$inputdir" "$outputdir"
 classify "C++"  "$inputdir" "$outputdir"
@@ -179,8 +177,8 @@ classify "Java" "$inputdir" "$outputdir"
 
 echo "DONE!"
 echo
-echo " Total:      $(ls -l $inputdir | grep .tgz | wc -l)"
 echo " Classified: $classified"
+echo " Total:      $(ls -l $inputdir | grep .tgz | wc -l)"
 echo
 echo "Output saved in: $outputdir"
 echo
