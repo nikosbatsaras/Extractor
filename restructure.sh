@@ -38,7 +38,6 @@ restructure() {
     local origin="$pwd"
 
     local src="${sources[$1]}"
-    local hdr="${headers[$1]}"
 
     # Find full path of first level directories
     local projects=(`find "$PWD" -maxdepth 1 -mindepth 1 -type d`)
@@ -51,7 +50,7 @@ restructure() {
         for dir in "${directories[@]}"
         do
             # Need to check if files exist inside
-            local num=`ls -1 "$dir"/$src "$dir"/$hdr 2>/dev/null | wc -l`
+            local num=`ls "$dir" 2>/dev/null | grep "$src" 2>/dev/null | wc -l`
             if [ $num != 0 ]
             then 
                 cp -r "$dir"/* "$project"

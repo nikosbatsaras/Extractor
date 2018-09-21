@@ -25,10 +25,6 @@
 #         the source files they contain.
 #         Update/replace phase1 files in case of resubmission.
 #
-# TODOs:
-#    1. Add support for more extensions
-#    2. Add support for regular expressions
-#
 ##
 
 clear
@@ -103,7 +99,7 @@ classify() {
         local dir=${dir%*/}
         cd "$dir"
 
-        local files=(`find . -name "${sources[$1]}"`)
+        local files=(`find . -regex "${sources[$1]}"`)
         if [ ${#files[@]} -gt 0 ]
         then
 
@@ -213,8 +209,7 @@ if [ -z "$query" ]; then
     usage
 fi
 
-declare -A sources=(["C"]="*.c" ["C++"]="*.cpp" ["Java"]="*.java")
-declare -A headers=(["C"]="*.h" ["C++"]="*.h"   ["Java"]="*.java")
+declare -A sources=(["C"]=".*\.c\|.*\.C" ["C++"]=".*\.cpp\|.*\.cc" ["Java"]=".*\.java")
 
 echo -n "Extracting .... "
 
