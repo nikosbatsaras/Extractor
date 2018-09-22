@@ -110,6 +110,11 @@ classify() {
                     res=(`grep "$5" "$dir2" &> /dev/null`)
                     if [ ${#res[@]} -gt 0 ]
                     then
+			if [ -d "$4"/"$1"/"`basename $dir`" ]; then
+				((resubs++))
+			else
+				mkdir -p "$4"/"$1"/"`basename $dir`"
+			fi
                         # Maybe mv ?!
                         cp "$dir2" "$4"/"$1"/"`basename $dir`"
                         rm "$dir2"
@@ -125,8 +130,12 @@ classify() {
                 then
                     cd ".."
 
-                    mkdir -p "$4"/"$1"/"`basename $dir`"
-                    rm -rf "$4"/"$1"/"`basename $dir`"/*
+		    if [ -d "$4"/"$1"/"`basename $dir`" ]; then
+			    ((resubs++))
+			    rm -rf "$4"/"$1"/"`basename $dir`"/*
+		    else
+			    mkdir -p "$4"/"$1"/"`basename $dir`"
+		    fi
 
                     for fl in "${res[@]}"
                     do
@@ -238,7 +247,8 @@ classify "Java" "$inputdir" "$phase2" "$phase1" "$query"
 
 echo "DONE!"
 echo
-echo " Resubs:     $updated"
+echo " Resubs:     $resubs"
+echo " Updated:    $updated"
 echo " Classified: $classified"
 echo " Total:      $(ls -l $inputdir | grep .tgz | wc -l)"
 echo
