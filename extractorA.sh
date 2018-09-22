@@ -144,6 +144,7 @@ if [ -z "$outputdir" ]; then
 fi
 
 declare -A sources=(["C"]=".*\.c\|.*\.C" ["C++"]=".*\.cpp\|.*\.cc" ["Java"]=".*\.java")
+declare -A headers=(["C"]=".*\.h\|.*\.H" ["C++"]=".*\.hpp\|.*\.hh\|.*\.h" ["Java"]=".*\.java")
 
 echo -n "Extracting .... "
 
