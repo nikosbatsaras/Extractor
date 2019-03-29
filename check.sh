@@ -13,13 +13,13 @@
 #   1) Extracting all the student submitted projects
 #   2) Classify them based on what programming language was used
 #   3) Re-structure the directory tree of the extracted and classified projects
-#   4) In case a student re-submits the 1rst phase of the project
+#   4) In case a student re-submits the 1st phase of the project
 #      at phase 2, take into account the latter submission for phase 1
 #
 #
 # @file   check.sh
 #
-# @author Nick Batsaras <nickbatsaras@gmail.com>
+# @author Nikos Batsaras <nickbatsaras@gmail.com>
 #
 # @desc   This script is used to check the quality of a query.
 #         A query is used to distinguish between phase 1 and phase 2 of a
@@ -59,7 +59,7 @@ echo
 usage() {
     echo
     echo "Usage:"
-    echo "      ./check.sh -d <directory> -q <query> [-h]"
+    echo "      check.sh -d <directory> -q <query> [-h]"
     echo
     echo "Options:"
     echo "      -d   Directory to check"
@@ -91,7 +91,7 @@ do
     esac
 done
 
-# Check if query option was specified
+# Check if input options were specified
 if [ -z $directory ]; then
     echo "ERROR: Directory not specified" >&2
     usage

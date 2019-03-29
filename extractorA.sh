@@ -13,13 +13,13 @@
 #   1) Extracting all the student submitted projects
 #   2) Classify them based on what programming language was used
 #   3) Re-structure the directory tree of the extracted and classified projects
-#   4) In case a student re-submits the 1rst phase of the project
+#   4) In case a student re-submits the 1st phase of the project
 #      at phase 2, take into account the latter submission for phase 1
 #
 #
 # @file   extractorA.sh
 #
-# @author Nick Batsaras <nickbatsaras@gmail.com>
+# @author Nikos Batsaras <nickbatsaras@gmail.com>
 #
 # @desc   A script to extract a group of .tgz files and classify them based on
 #         the source files they contain.
@@ -53,7 +53,7 @@ echo
 usage() {
     echo
     echo "Usage:"
-    echo "      ./extractorA.sh -i <input-dir> -o <output-dir> [-h]"
+    echo "      extractorA.sh -i <input-dir> -o <output-dir> [-h]"
     echo
     echo "Options:"
     echo "      -i   Directory with compressed projects"
