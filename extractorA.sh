@@ -119,8 +119,7 @@ do
             cd "$OPTARG"; inputdir="`pwd`"; cd - &> /dev/null;; 
         o) 
             if [ ! -d "$OPTARG" ]; then
-                echo "ERROR: Directory $OPTARG does not exist" >&2
-                exit 1
+                mkdir "$OPTARG"
             fi
             cd "$OPTARG"; outputdir="`pwd`"; cd - &> /dev/null;;
        \?)

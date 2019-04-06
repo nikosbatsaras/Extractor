@@ -180,8 +180,7 @@ do
             cd "$OPTARG"; phase1="`pwd`"; cd - &> /dev/null;;
         b) 
             if [ ! -d "$OPTARG" ]; then
-                echo "ERROR: Directory $OPTARG does not exist" >&2
-                exit 1
+                mkdir "$OPTARG"
             fi
             cd "$OPTARG"; phase2="`pwd`"; cd - &> /dev/null;;
         q) 
