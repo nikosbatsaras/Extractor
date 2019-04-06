@@ -231,7 +231,7 @@ done
 
 echo "DONE!"
 
-find "$inputdir" -name "* *" -type d | rename 's/ /_/g'
+find "$inputdir" -name "* *" -type d | rename 's/ /_/g' 2> /dev/null
 
 echo -n "Classifying ... "
 
