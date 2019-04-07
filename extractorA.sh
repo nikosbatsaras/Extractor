@@ -158,7 +158,8 @@ done
 
 echo "DONE!"
 
-find "$inputdir" -name "* *" -type d | rename 's/ /_/g' 2> /dev/null
+# Convert whitespace to underscore
+for f in "$inputdir"/*\ *; do mv "$f" "${f// /_}"; done 2> /dev/null
 
 echo -n "Classifying ... "
 
